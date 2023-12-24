@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  server:
+    container_name: server
+    restart: always
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    networks:
+      - mern-metwork
+
+  database:
+    image: mongo
+    container_name: mongo-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
+      - MONGO_INITDB_DATABASE=$MONGODB_DATABASE
+    ports:
+      - "27017:27017"
+    volumes: 
+      - ./backup:/data/db
+    networks:
+      - mern-metwork
+
+  client:
+    container_name: client
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    networks:
+      - mern-metwork
+
+networks:
+  mern-metwork:
+    driver: bridge 
+  
